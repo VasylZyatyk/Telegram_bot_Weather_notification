@@ -1,9 +1,9 @@
-const TelegramBot = require('node-telegram-bot-api');
+const telegramBot = require('node-telegram-bot-api');
 const axios = require('axios');
 require('dotenv').config();
 
 const token = process.env.TELEGRAM_BOT_TOKEN;
-const bot = new TelegramBot(token, { polling: true });
+const bot = new telegramBot(token, { polling: true });
 const weatherApiKey = process.env.OPENWEATHERMAP_API_KEY;
 
 bot.onText(/\/weather (.+)/, async (msg, match) => {
@@ -19,9 +19,9 @@ bot.onText(/\/weather (.+)/, async (msg, match) => {
         const feelsLike = kelvinToCelsius(weatherData.main.feels_like);
         const description = weatherData.weather[0].description;
 
-        bot.sendMessage(chatId, `The temperature in ${city} is ${temperature}°C and it feels like ${feelsLike}°C. The weather is ${description}.`);
+        bot.sendMessage(chatId, `Температура в ${city} становить ${temperature} і відчувається як ${feelsLike}°C. Погода ${description}.`);
     } catch (error) {
-        bot.sendMessage(chatId, 'Sorry, I could not get the weather data. Please try again later.');
+        bot.sendMessage(chatId, 'Вибачте,я не отримав дані про погоду.Спробуйте пізніше.');
     }
 });
 
@@ -35,7 +35,7 @@ bot.onText(/\/subscribe (.+)/, (msg, match) => {
     // Add the user's chat ID and location to the subscriptions object
     subscriptions[chatId] = location;
 
-    bot.sendMessage(chatId, `You have successfully subscribed to daily weather updates for ${location}.`);
+    bot.sendMessage(chatId, `Ви успішно підписались на оновлення даних про погоду для ${location}.`);
 });
 
 bot.onText(/\/unsubscribe/, (msg) => {
@@ -44,7 +44,7 @@ bot.onText(/\/unsubscribe/, (msg) => {
     // Remove the user's chat ID from the subscriptions object
     delete subscriptions[chatId];
 
-    bot.sendMessage(chatId, 'You have successfully unsubscribed from daily weather updates.');
+    bot.sendMessage(chatId, 'Ви успішно відписались від оновлень даних про погоду.');
 });
 // Function to send daily weather updates to all subscribed users
 const sendDailyUpdates = async () => {
@@ -71,9 +71,9 @@ const sendDailyUpdates = async () => {
             const feelsLike = kelvinToCelsius(weatherData.main.feels_like);
             const description = weatherData.weather[0].description;
 
-            bot.sendMessage(chatId, `The temperature in ${location} is ${temperature}°C and it feels like ${feelsLike}°C. The weather is ${description}.`);
+            bot.sendMessage(chatId, `Температура ${location} становить ${temperature}°C , відчувається як ${feelsLike}°C. Погода ${description}.`);
         } catch (error) {
-            bot.sendMessage(chatId, 'Sorry, I could not get the weather data. Please try again later.');
+            bot.sendMessage(chatId, 'Вибачте,я не отримав дані про погоду.Спробуйте пізніше');
         }
     }
 };
