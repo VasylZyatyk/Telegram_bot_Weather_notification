@@ -6,26 +6,28 @@ const token = process.env.TELEGRAM_BOT_TOKEN;
 const bot = new telegramBot(token, { polling: true });
 const weatherApiKey = process.env.OPENWEATHERMAP_API_KEY;
 
-bot.onText(/\/weather (.+)/, async (msg, match) => {
-    const chatId = msg.chat.id;
-    const city = match[1];
+bot.on('message', async (msg) => {
+    if (msg.text.startsWith('/weather')) {
+        const chatId = msg.chat.id;
+        const city = msg.text.split(' ')[1];
 
-    try {
-        const response = await axios.get(`http://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${weatherApiKey}`);
-        const weatherData = response.data;
+        try {
+            const response = await axios.get(`http://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${weatherApiKey}`);
+            const weatherData = response.data;
 
-        const kelvinToCelsius = (temp) => (temp - 273.15).toFixed(2);
-        const temperature = kelvinToCelsius(weatherData.main.temp);
-        const feelsLike = kelvinToCelsius(weatherData.main.feels_like);
-        const description = weatherData.weather[0].description;
+            const kelvinToCelsius = (temp) => (temp - 273.15).toFixed(2);
+            const temperature = kelvinToCelsius(weatherData.main.temp);
+            const feelsLike = kelvinToCelsius(weatherData.main.feels_like);
+            const description = weatherData.weather[0].description;
 
-        bot.sendMessage(chatId, `Температура в ${city} становить ${temperature} і відчувається як ${feelsLike}°C. Погода ${description}.`);
-    } catch (error) {
-        bot.sendMessage(chatId, 'Вибачте,я не отримав дані про погоду.Спробуйте пізніше.');
+            bot.sendMessage(chatId, `Температура в ${city} становить ${temperature} і відчувається як ${feelsLike}°C. Погода ${description}.`);
+        } catch (error) {
+            bot.sendMessage(chatId, 'Вибачте,я не отримав дані про погоду.Спробуйте пізніше.');
+        }
     }
 });
 
-// In-memory data structure to store subscriptions
+
 const subscriptions = {};
 
 bot.onText(/\/subscribe (.+)/, (msg, match) => {
